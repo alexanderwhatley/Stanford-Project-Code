@@ -33,7 +33,7 @@ from ete3 import Tree, TreeNode, TreeStyle, TextFace
 
 data_dir = '.'
 
-supplementary_data = pd.read_csv('../Suppl.Table2.CODEX_paper_MRLdatasetexpression.csv')
+supplementary_data = pd.read_csv('Suppl.Table2.CODEX_paper_MRLdatasetexpression.csv')
 marker_cols = list(supplementary_data.columns[1:30])
 supplementary_data = supplementary_data[['X.X', 'Y.Y', 'Z.Z', 'sample_Xtile_Ytile', 
                                          'CD45', 'Imaging phenotype cluster ID']]
@@ -43,7 +43,7 @@ ids_to_names = pd.read_csv('ClusterIDtoName.txt', sep='\t')
 cell_lines = list(ids_to_names['ID'].values)
 ids_to_names = dict(zip(ids_to_names['ID'].values, ids_to_names['Name'].values))
 # remove dirt from supplementary data 
-supplementary_annotations = pd.read_excel('../Suppl.Table2.cluster annotations and cell counts.xlsx')
+supplementary_annotations = pd.read_excel('Suppl.Table2.cluster annotations and cell counts.xlsx')
 dirt = supplementary_annotations.loc[supplementary_annotations['Imaging phenotype (cell type)'] == 'dirt', 'X-shift cluster ID']
 supplementary_data = supplementary_data[~supplementary_data['Imaging phenotype cluster ID'].isin(dirt)]
 supplementary_data['sample'] = supplementary_data['sample_Xtile_Ytile'].apply(lambda x: x.split('_')[0])
