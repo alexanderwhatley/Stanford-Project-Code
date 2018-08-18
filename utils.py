@@ -34,7 +34,7 @@ from ete3 import Tree, TreeNode, TreeStyle, TextFace
 data_dir = '.'
 
 supplementary_data = pd.read_csv('../Suppl.Table2.CODEX_paper_MRLdatasetexpression.csv')
-marker_cols = supplementary_data.columns[1:30]
+marker_cols = list(supplementary_data.columns[1:30])
 supplementary_data = supplementary_data[['X.X', 'Y.Y', 'Z.Z', 'sample_Xtile_Ytile', 
                                          'CD45', 'Imaging phenotype cluster ID']]
 supplementary_data.rename(columns={'X.X': 'X', 'Y.Y': 'Y', 'Z.Z': 'Z'}, inplace=True)
@@ -256,13 +256,14 @@ def hls2hex(h, l, s):
     return '#%02x%02x%02x' % tuple(map(lambda x: int(x*255),
                                       colorsys.hls_to_rgb(h, l, s)))    
 
-def recreate_tree(tree, num_layers=None):
+def recreate_tree(tree, num_layers=None, color=True):
     # build tree with same topology but without the coordinate and metadata labels 
     # use color_dict to color nodes the appropriate colors 
     new_tree = TreeNode(name = tree.name)
     #new_tree = TreeNodeHashable(name = tree.name)
     new_tree.img_style['size'] = 10
-    new_tree.img_style['fgcolor'] = tree.color
+    if color:
+        new_tree.img_style['fgcolor'] = tree.color
     new_tree.img_style['shape'] = 'sphere'
     old_layer = [tree]
     new_layer = [new_tree]
@@ -274,7 +275,8 @@ def recreate_tree(tree, num_layers=None):
                 next_old_layer.append(child)
                 new_child = TreeNode(name = child.name)
                 new_child.img_style['size'] = 10
-                new_child.img_style['fgcolor'] = child.color
+                if color:
+                    new_child.img_style['fgcolor'] = child.color
                 new_child.img_style['shape'] = 'sphere'
                 new_layer[ind].add_child(new_child)
                 next_new_layer.append(new_child)
@@ -443,6 +445,7 @@ def plot_path_clusters(path, path_ind, depth):
             node = path[node_ind+1]
             fig.suptitle('Layer {}, Clusters = {}'.format(node_ind, node.num_clusters))
             coords = node.coords.copy()
+            print('{} points in {} layer in path {}.'.format(coords.shape[0], node_ind, path_ind))
             for ind, sample in enumerate(samples):
                 sample_coords = coords[coords['sample'] == sample]
                 scatter = ax[ind//3][ind%3].scatter(sample_coords['X'], sample_coords['Y'], s=0.1)
